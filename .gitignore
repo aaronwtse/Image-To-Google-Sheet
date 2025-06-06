@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual envs
+env/
+venv/
+
+# VS Code
+.vscode/
+
+# Credentials
+*.json
