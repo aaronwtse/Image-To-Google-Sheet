@@ -28,3 +28,16 @@ def get_google_creds():
         return service_account.Credentials.from_service_account_file(
             tmp_path, scopes=SCOPES
         )
+    
+def extract_from_s3(bucket, key):
+    resp = textract.analyze_document(
+        Document={'S3Object': {'Bucket': bucket, 'Name': key}},
+        FeatureTypes=['FORMS']
+    )
+    data = {}
+    blocks = resp.get('Blocks', [])
+    for block in blocks:
+        if block['BlockType']=='KEY_VALUE_SET' and 'KEY' in block.get('EntityTypes', []):
+            text = ''.join([w['Text'] for w in blocks if w['BlockType']=='WORD' and w['Id'] in [rid for rel in block.get('Relationships',[]) if rel['Type']=='CHILD' for rid in rel['Ids']]])
+            data[text] = "VALUE_NOT_IMPLEMENTED"
+    return data
