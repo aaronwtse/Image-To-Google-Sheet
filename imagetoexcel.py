@@ -41,3 +41,14 @@ def extract_from_s3(bucket, key):
             text = ''.join([w['Text'] for w in blocks if w['BlockType']=='WORD' and w['Id'] in [rid for rel in block.get('Relationships',[]) if rel['Type']=='CHILD' for rid in rel['Ids']]])
             data[text] = "VALUE_NOT_IMPLEMENTED"
     return data
+
+def write_to_sheet(creds, entries):
+    service = build('sheets', 'v4', credentials=creds)
+    values = [[k, v] for k, v in entries.items()]
+    body = {'values': values}
+    service.spreadsheets().values().append(
+        spreadsheetId=SPREADSHEET_ID,
+        range='Sheet1!A:B',
+        valueInputOption='RAW',
+        body=body
+    ).execute()
